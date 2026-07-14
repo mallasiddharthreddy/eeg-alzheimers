@@ -1,8 +1,8 @@
-# Severity-Aware EEG Classification of Alzheimer's Disease
+# Severity-Aware EEG Classification of Alzheimer’s Disease Using Explainable AI
 
-> **Associated Paper:** "Severity-Aware EEG Classification of Alzheimer's Disease: From Squeeze-and-Excitation Attention to XAI-Guided Channel Selection Across the Severity Spectrum"  
-> Submitted to *Cognitive Neurodynamics* (Springer), April 2026.  
-> Authors: K. Prabhakar, Malla Siddharth Reddy, Kaleru Akhila, Prasad Chetti
+> **Associated Paper:** "Severity-Aware EEG Classification of Alzheimer's Disease Using XAI-Guided Channel Selection "  
+> Submitted to *Biomedical Signal Processing and Control* (Elsevier), June 2026.  
+> Authors: Malla Siddharth Reddy, K. Prabhakar, Kaleru Akhila, Prasad Chetti
 
 ---
 
@@ -126,20 +126,6 @@ https://openneuro.org/datasets/ds004504
    ```
 4. Place the downloaded `.pkl` files in a folder called `eeg_checkpoints/`
 5. Run `notebooks/severity_aware_eeg_alzheimers_xai.ipynb` — the notebook will automatically load from checkpoints and skip retraining
-
----
-
-## Citation
-
-If you use this code or findings in your research, please cite:
-
-```
-Prabhakar K, Reddy MS, Akhila K, Chetti P (2026)
-Severity-Aware EEG Classification of Alzheimer's Disease:
-From Squeeze-and-Excitation Attention to XAI-Guided Channel
-Selection Across the Severity Spectrum.
-Cognitive Neurodynamics (under review).
-```
 
 ---
 
