@@ -1,8 +1,5 @@
 # Severity-Aware EEG Classification of Alzheimer’s Disease Using Explainable AI
 
-> **Associated Paper:** "Severity-Aware EEG Classification of Alzheimer's Disease Using XAI-Guided Channel Selection "  
-> Authors: Malla Siddharth Reddy, Kaleru Akhila, K. Prabhakar
-
 ---
 
 ## 🔴 Live Demo
