@@ -11,6 +11,8 @@ Upload EEG data and get real-time Alzheimer's disease classification with XAI-gu
 
 ## Overview
 
+> Code for EpochSpec (Alzheimer's vs. healthy classification, under review at IEEE ESCI 2027) will be released after the review.
+
 This repository contains the full Phase 2 research code and results for EEG-based Alzheimer's disease (AD) detection using a two-phase methodology:
 
 - **Phase 1** (n=42, severe AD only): EEGNet-SE with Squeeze-and-Excitation attention achieves **AUC = 0.950**
@@ -26,7 +28,7 @@ All experiments use **leakage-proof Leave-One-Subject-Out Cross-Validation (LOSO
 |---|---|---|---|---|---|
 | EEGNet-SE (Phase 1) | 19 | 1,954 | 0.950 | 0.769 | 1.000 |
 | EEGNet+XAI 10ch (Phase 2) | 10 | 1,890 | **0.927** | **0.889** | 0.931 |
-| EEGNetSE (Phase 2) | 19 | 1,954 | 0.919 | 0.806 | 0.966 |
+| EEGNet-SE (Phase 2) | 19 | 1,954 | 0.919 | 0.806 | 0.966 |
 | EEGNet (Phase 2) | 19 | 1,890 | 0.914 | 0.806 | 1.000 |
 | DeepConvNet | 19 | 154,802 | 0.873 | 1.000 | 0.000 |
 
@@ -39,11 +41,10 @@ All experiments use **leakage-proof Leave-One-Subject-Out Cross-Validation (LOSO
 ---
 
 ## Key Findings
-
-- **XAI improves EEGNet** (+0.013 AUC) but **degrades EEGNet-SE** (−0.038 AUC) — a novel attention-pruning incompatibility
-- **Theta band** (4–8 Hz) is useless for severe AD but becomes **critical** (ΔAcc = +0.323) when moderate AD subjects are included
-- **DeepConvNet catastrophically overfits** (Spec = 0.000) on small EEG cohorts — lightweight models are essential
-- **10 electrodes outperform all 19-channel baselines** — clinically deployable montage
+- XAI-guided channel selection improves EEGNet slightly (AUC 0.914 → 0.927) but lowers EEGNet-SE (0.919 → 0.881), which suggests that channel pruning and SE attention may not combine well.
+- Theta (4–8 Hz) has little effect for severe AD but becomes important once moderate AD subjects are included (band ablation ΔAcc = 0.323).
+- DeepConvNet (155k parameters) labels every subject as AD at the default threshold (Spec = 0.000), while compact models with under 2k parameters work well on this small cohort.
+- A 10-electrode montage matches the 19-channel baselines (AUC 0.927 vs 0.914–0.919), which points to a cheaper recording setup.
 
 ---
 
