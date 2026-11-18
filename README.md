@@ -5,7 +5,7 @@
 ## 🔴 Live Demo
 **[Try the Streamlit App →](https://eeg-alzheimers-demo.streamlit.app)**
 
-Upload EEG data and get real-time Alzheimer's disease classification with XAI-guided channel importance visualisation.
+Browse the 65-subject cohort and see each subject's leave-one-subject-out prediction, with XAI channel importance and biomarker analysis.
 
 ---
 
