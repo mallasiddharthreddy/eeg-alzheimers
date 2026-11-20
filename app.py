@@ -351,10 +351,7 @@ def plot_freq_ablation(freq_data):
            edgecolor='black', linewidth=1.5)
 
     ax.annotate(
-        f'KEY FINDING\n'
-        f'Theta: USELESS→CRITICAL\n'
-        f'ΔAcc = '
-        f'+{p2_vals[theta_idx]:.3f}',
+        'Theta: ΔAcc +0.000 → +0.323',
         xy=(x[theta_idx] + width/2,
             p2_vals[theta_idx]),
         xytext=(
@@ -538,16 +535,21 @@ def plot_model_auc():
         'EEGNet+ShallowCN (19ch)',
         'EEGNet (19ch)',
         'EEGNetSE (19ch)',
-        'EEGNet+XAI (10ch) ★'
+        'EEGNet+XAI (10ch)'
     ]
     aucs = [
         0.875, 0.873, 0.878,
         0.880, 0.891, 0.910,
         0.906, 0.914, 0.919, 0.927
     ]
+    order = sorted(
+        range(len(aucs)),
+        key=lambda i: aucs[i])
+    models = [models[i] for i in order]
+    aucs = [aucs[i] for i in order]
 
     colors = [
-        '#d62728' if '★' in m
+        '#d62728' if m == 'EEGNet+XAI (10ch)'
         else '#7f7f7f' if 'Deep' in m
         else '#1f77b4'
         for m in models]
@@ -570,7 +572,7 @@ def plot_model_auc():
         0.927, color='#d62728',
         linestyle='--', linewidth=1.5,
         alpha=0.7,
-        label='Best AUC = 0.927')
+        label='Highest AUC = 0.927')
     ax.set_xlim(0.82, 0.95)
     ax.set_xlabel(
         'AUC (ROC Curve)', fontsize=11)
@@ -595,7 +597,7 @@ with st.sidebar:
     **Dataset:** OpenNeuro ds004504
     **Subjects:** 65 (29 CN, 36 AD)
     **Validation:** LOSO-CV
-    **Best AUC:** 0.927
+    **AUC:** 0.927
     **Parameters:** 1,746
     **Channels:** 10 (XAI-selected)
     **Threshold:** τ = 0.5
@@ -615,10 +617,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("""
-    **Authors:**
-    K. Prabhakar, Malla Siddharth Reddy, Kaleru Akhila, Prasad Chetti
-
-    **CBIT(A), Hyderabad**
+    **Built by:** Malla Siddharth Reddy
     """)
 
 # ─────────────────────────────────────────
@@ -630,7 +629,7 @@ st.title(
 st.markdown(
     "**EEGNet+XAI (10ch)** | "
     "Phase 2: n=65 | AUC=0.927 | "
-    "Leakage-Proof LOSO-CV")
+    "LOSO-CV")
 st.markdown("---")
 
 with st.spinner(
@@ -755,7 +754,7 @@ with tab1:
             use_container_width=True)
 
     with col2:
-        st.subheader("Diagnosis Result")
+        st.subheader("Prediction Result")
 
         if run_btn:
             with st.spinner(
@@ -831,7 +830,7 @@ with tab1:
             "Subject Position — "
             "MMSE vs Predicted Probability")
         st.markdown(
-            "⭐ marks the selected subject | "
+            "Star marks the selected subject | "
             "All 65 subjects shown | "
             "CN subjects jittered around "
             "MMSE=30 for visibility")
@@ -873,24 +872,11 @@ with tab2:
 
     st.markdown("---")
     st.info("""
-    **Key Finding: Posterior Dominance**
+    **Observation: Posterior channels rank highest**
 
-    T5, O1, O2, P3, P4, Pz =
-    **6 of 10** selected channels are
-    posterior / parieto-temporal.
+    T5, O1, O2, P3, P4 and Pz are 6 of the 10 selected channels, all posterior or parieto-temporal. This is consistent with the parieto-temporal changes reported in AD.
 
-    This matches established AD
-    neurophysiology: posterior cortical
-    atrophy and parieto-temporal network
-    disruption are hallmark features of
-    Alzheimer's Disease.
-
-    **Phase 1 vs Phase 2 contrast:**
-    Phase 1 (severe AD only) highlighted
-    frontal-temporal electrodes (F4, T3, F7).
-    Phase 2 (all severity) shifts to
-    posterior dominance — confirming that
-    channel relevance is severity-dependent.
+    **Phase 1 vs Phase 2:** in Phase 1 (severe AD only), frontal-temporal electrodes (F4, T3, F7) ranked highest. In Phase 2 (all severities), posterior channels rank highest, which suggests that channel relevance may depend on severity. These rankings come from one model and were computed on all subjects, so they are exploratory.
     """)
 
     # SHAP bar chart
@@ -949,11 +935,16 @@ with tab3:
         "Severity-Dependent "
         "Biomarker Shift")
     st.markdown(
-        "EEG frequency band importance "
-        "**changes with AD severity**. "
-        "Insights from severe-only cohorts "
-        "cannot be transferred to "
-        "mixed-severity cohorts.")
+        "In this data, band importance "
+        "changed when moderate AD subjects "
+        "were added, so findings from "
+        "severe-only cohorts may not "
+        "transfer to mixed-severity cohorts. "
+        "Band importance was measured on a "
+        "model trained on most of these "
+        "subjects, so it shows what the "
+        "model relies on, not how well it "
+        "generalises.")
 
     fig_freq = plot_freq_ablation(freq_data)
     st.pyplot(fig_freq)
@@ -977,10 +968,10 @@ with tab3:
         st.error(f"""
         **Beta Band (13-30 Hz)**
 
-        Phase 1: CRITICAL
+        Phase 1:
         ΔAcc = +{beta_p1:.3f}
 
-        Phase 2: Important
+        Phase 2:
         ΔAcc = +{beta_p2:.3f}
 
         Dominant in **severe AD** due to
@@ -990,12 +981,12 @@ with tab3:
 
     with col2:
         st.success(f"""
-        **Theta Band (4-8 Hz) ⭐**
+        **Theta Band (4-8 Hz)**
 
-        Phase 1: USELESS
+        Phase 1:
         ΔAcc = +{theta_p1:.3f}
 
-        Phase 2: CRITICAL
+        Phase 2:
         ΔAcc = +{theta_p2:.3f}
 
         Classic theta-slowing signature
@@ -1005,17 +996,9 @@ with tab3:
 
     with col3:
         st.warning("""
-        **Clinical Implication**
+        **Implication**
 
-        Models trained on severe-only
-        cohorts learn beta features.
-
-        Models for mixed-severity must
-        capture theta slowing.
-
-        **Frequency importance must be
-        validated separately for each
-        target severity population.**
+        Models trained on severe-only cohorts relied on beta features. Models for mixed-severity cohorts may need to capture theta slowing. Frequency importance should be checked separately for each target severity population.
         """)
 
 # ═════════════════════════════════════════
@@ -1037,7 +1020,7 @@ with tab4:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.subheader("EEGNet+XAI (10ch) ★")
+        st.subheader("EEGNet+XAI (10ch)")
         st.markdown("""
         | Metric | Value |
         |--------|-------|
@@ -1079,57 +1062,31 @@ with tab4:
 
     st.markdown("---")
     st.subheader(
-        "Novel Finding: "
-        "Attention-Pruning Incompatibility")
+        "Observation: "
+        "Attention and Channel Pruning")
 
     col1, col2 = st.columns(2)
     with col1:
         st.success("""
         **EEGNet + XAI (10ch)**
 
-        19ch → 10ch: **+0.013 AUC**
-
-        No internal attention.
-        Pruning removes uninformative
-        channels → model focuses on
-        coherent posterior pattern
-        → better generalisation.
+        19ch → 10ch: +0.013 AUC. Not statistically significant (DeLong p = 0.445). One possible reason: without internal attention, removing low-ranked channels may help the model focus on the posterior pattern.
         """)
     with col2:
         st.error("""
         **EEGNetSE + XAI (10ch)**
 
-        19ch → 10ch: **−0.038 AUC**
-
-        SE weights calibrated for
-        19-channel context. Removing
-        9 channels shifts feature
-        distribution → attention
-        amplifies wrong channels
-        → performance degrades.
+        19ch → 10ch: −0.038 AUC. Not statistically significant (DeLong p = 0.066). One possible reason: the SE weights are learned for 19 channels, and removing 9 channels may change what the attention amplifies.
         """)
 
     st.info("""
-    **Clinical Implication:**
-    For electrode reduction (mobile
-    deployment, emergency monitoring,
-    patient comfort): use
-    **EEGNet+XAI (10ch)**.
-    EEGNetSE requires all 19 channels.
+    Possible implication: if this holds with channel selection inside each fold, EEGNet with 10 channels could support setups with fewer electrodes. EEGNet-SE did better with all 19 channels.
     """)
 
     st.markdown("---")
     st.subheader(
         "DeepConvNet: "
-        "Catastrophic Overfitting")
+        "Poor Fit for a Small Cohort")
     st.error("""
-    DeepConvNet (154,802 parameters)
-    classified ALL 29 CN subjects as AD
-    at the default threshold.
-
-    89× more parameters than
-    EEGNet+XAI (10ch) → WORSE performance.
-
-    Confirms: lightweight architectures
-    are essential for small EEG cohorts.
+    DeepConvNet (154,802 parameters) classified all 29 CN subjects as AD at the default threshold, although its AUC (0.873) is close to ShallowConvNet (0.878) and PSD+SVM (0.875). It has 89× more parameters than EEGNet+XAI (10ch) and gains nothing. This suggests that lightweight architectures suit small EEG cohorts better.
     """)

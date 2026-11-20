@@ -128,3 +128,8 @@ https://openneuro.org/datasets/ds004504
 
 Code: MIT License  
 Dataset: CC0 (OpenNeuro ds004504)
+
+---
+
+## Acknowledgements
+This project started as my undergraduate thesis, supervised by Dr. K. Prabhakar, with Kaleru Akhila and Dr. Prasad Chetti as co-authors on the manuscript.
