@@ -974,9 +974,8 @@ with tab3:
         Phase 2:
         ΔAcc = +{beta_p2:.3f}
 
-        Dominant in **severe AD** due to
-        profound cortical disruption and
-        beta desynchronisation.
+        Most important in the severe-only
+        cohort (Phase 1).
         """)
 
     with col2:
@@ -989,9 +988,9 @@ with tab3:
         Phase 2:
         ΔAcc = +{theta_p2:.3f}
 
-        Classic theta-slowing signature
-        emerges when **moderate AD**
-        subjects enter the cohort.
+        Became important once moderate AD
+        subjects were added, consistent with
+        the theta slowing reported in AD.
         """)
 
     with col3:
