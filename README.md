@@ -11,26 +11,32 @@ Browse the 65-subject cohort and see each subject's leave-one-subject-out predic
 
 ## Overview
 
-> Code for EpochSpec (Alzheimer's vs. healthy classification, under review at IEEE ESCI 2027) will be released after the review.
+> Code for EpochSpec (EEG detection of Alzheimer's disease and frontotemporal dementia, under review at IEEE ESCI 2027) will be released after the review.
 
 This repository contains the full Phase 2 research code and results for EEG-based Alzheimer's disease (AD) detection using a two-phase methodology:
 
 - **Phase 1** (n=42, severe AD only): EEGNet-SE with Squeeze-and-Excitation attention achieves **AUC = 0.950**
-- **Phase 2** (n=65, all severity stages): XAI-guided channel selection (SHAP + occlusion) with EEGNet achieves **AUC = 0.927** using only 10 electrodes
+- **Phase 2** (n=65, all severity stages): XAI-guided channel selection (SHAP + occlusion) with EEGNet reaches **AUC = 0.927** with only 10 electrodes (exploratory; see the notes below)
 
-All experiments use **leakage-proof Leave-One-Subject-Out Cross-Validation (LOSO-CV)** to prevent data leakage from EEG segmentation.
+All models are evaluated with Leave-One-Subject-Out Cross-Validation (LOSO-CV), so no subject's data is used to train the model that tests it. See the notes below for the limitations.
 
 ---
 
 ## Key Results
 
-| Model | Channels | Params | AUC | Sensitivity | Specificity |
-|---|---|---|---|---|---|
-| EEGNet-SE (Phase 1) | 19 | 1,954 | 0.950 | 0.769 | 1.000 |
-| EEGNet+XAI 10ch (Phase 2) | 10 | 1,890 | **0.927** | **0.889** | 0.931 |
-| EEGNet-SE (Phase 2) | 19 | 1,954 | 0.919 | 0.806 | 0.966 |
-| EEGNet (Phase 2) | 19 | 1,890 | 0.914 | 0.806 | 1.000 |
-| DeepConvNet | 19 | 154,802 | 0.873 | 1.000 | 0.000 |
+| Model | Channels | Params | AUC |
+|---|---|---|---|
+| EEGNet-SE (Phase 1) | 19 | 1,954 | 0.950 |
+| EEGNet+XAI 10ch (Phase 2) | 10 | 1,746 | 0.927 |
+| EEGNet-SE (Phase 2) | 19 | 1,954 | 0.919 |
+| EEGNet (Phase 2) | 19 | 1,890 | 0.914 |
+| DeepConvNet | 19 | 154,802 | 0.873 |
+
+**Notes on evaluation**
+- AUC does not depend on a decision threshold. Sensitivity and specificity do, and the thresholds in the notebook were tuned on the pooled LOSO predictions, which makes them optimistic, so they are not shown above. At a fixed threshold of 0.5, the 10-channel model classifies 56 of 65 subjects correctly (accuracy 86.2%, sensitivity 77.8%, specificity 96.6%).
+- The 10 channels were ranked with SHAP and occlusion on a model trained on most subjects and applied to all 65. Channel selection therefore happened outside the LOSO loop, so the 10-channel result is exploratory and may be optimistic.
+- The AUC differences between EEGNet, EEGNet-SE and the 10-channel model in Phase 2 are not statistically significant (DeLong p ≥ 0.44).
+- The band ablation used one model trained on most of the 65 subjects, so it shows what the model relies on, not how well it generalises.
 
 ---
 
@@ -41,34 +47,26 @@ All experiments use **leakage-proof Leave-One-Subject-Out Cross-Validation (LOSO
 ---
 
 ## Key Findings
-- XAI-guided channel selection improves EEGNet slightly (AUC 0.914 → 0.927) but lowers EEGNet-SE (0.919 → 0.881), which suggests that channel pruning and SE attention may not combine well.
-- Theta (4–8 Hz) has little effect for severe AD but becomes important once moderate AD subjects are included (band ablation ΔAcc = 0.323).
-- DeepConvNet (155k parameters) labels every subject as AD at the default threshold (Spec = 0.000), while compact models with under 2k parameters work well on this small cohort.
-- A 10-electrode montage matches the 19-channel baselines (AUC 0.927 vs 0.914–0.919), which points to a cheaper recording setup.
+- With 10 XAI-ranked channels, EEGNet's AUC went from 0.914 to 0.927, while EEGNet-SE's fell from 0.919 to 0.880. Neither change is statistically significant, but the pattern suggests that hard channel pruning and SE attention may not combine well.
+- Theta (4–8 Hz) has little effect for severe AD but becomes important once moderate AD subjects are included (band ablation ΔAcc = 0.323; see notes).
+- DeepConvNet (155k parameters) labels every subject as AD at the default threshold, while compact models with under 2k parameters work well on this small cohort.
+- A 10-electrode montage performed on par with the 19-channel models (AUC 0.927 vs 0.914–0.919). This points to a cheaper recording setup, but it needs confirmation with channel selection inside each fold.
 
 ---
 
 ## Result Figures
 
-| Baseline Comparison | ROC Curves |
+| ROC Curves | XAI Channel Importance |
 |---|---|
-| ![Baseline](figures/p2_fig1_baseline_comparison.png) | ![ROC](figures/p2_fig2_roc_curves.png) |
-
-| XAI Channel Importance | XAI Channel Impact |
-|---|---|
-| ![XAI Channels](figures/p2_fig4_xai_channels.png) | ![XAI Impact](figures/p2_fig5_xai_channel_impact.png) |
+| ![ROC](figures/p2_fig2_roc_curves.png) | ![XAI Channels](figures/p2_fig4_xai_channels.png) |
 
 | Frequency Band Ablation | Topographic Map |
 |---|---|
 | ![Freq](figures/p2_fig6_freq_ablation.png) | ![Topo](figures/p2_fig9_topo_map.png) |
 
-| Severity-Stratified Performance | Subject-Level Predictions |
-|---|---|
-| ![Severity](figures/p2_fig10_severity_stratified.png) | ![Subjects](figures/p2_fig11_subject_predictions.png) |
-
-| GradCAM Temporal Saliency | Channel Count Ablation |
-|---|---|
-| ![GradCAM](figures/p2_fig13_gradcam.png) | ![Ablation](figures/p2_fig14_channel_ablation_curve.png) |
+| GradCAM Temporal Saliency |
+|---|
+| ![GradCAM](figures/p2_fig13_gradcam.png) |
 
 ---
 

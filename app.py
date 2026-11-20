@@ -51,7 +51,7 @@ XAI_IMPORTANCE = {
 XAI_IDX = [ALL_CHANNELS.index(ch)
            for ch in XAI_CHANNELS]
 
-THRESHOLD = 0.45
+THRESHOLD = 0.5
 FS        = 250
 EP_LEN    = 500
 
@@ -576,8 +576,7 @@ def plot_model_auc():
         'AUC (ROC Curve)', fontsize=11)
     ax.set_title(
         'All Phase 2 Models — AUC Comparison\n'
-        'EEGNet+XAI (10ch): Best AUC with '
-        'fewest parameters (1,890)',
+        'EEGNet+XAI (10ch) uses 1,746 parameters',
         fontsize=12, fontweight='bold')
     ax.legend(fontsize=10)
     plt.tight_layout()
@@ -597,9 +596,9 @@ with st.sidebar:
     **Subjects:** 65 (29 CN, 36 AD)
     **Validation:** LOSO-CV
     **Best AUC:** 0.927
-    **Parameters:** 1,890
+    **Parameters:** 1,746
     **Channels:** 10 (XAI-selected)
-    **Threshold:** τ = 0.45
+    **Threshold:** τ = 0.5
     """)
 
     st.markdown("---")
@@ -607,20 +606,17 @@ with st.sidebar:
     col1, col2 = st.columns(2)
     with col1:
         st.metric("AUC", "0.927")
-        st.metric("Sensitivity", "88.9%")
-        st.metric("Sev. AD Sens.", "92.3%")
+        st.metric("Sensitivity", "77.8%")
+        st.metric("Sev. AD Sens.", "84.6%")
     with col2:
-        st.metric("Accuracy", "90.8%")
-        st.metric("Specificity", "93.1%")
-        st.metric("Mod. AD Sens.", "87.0%")
+        st.metric("Accuracy", "86.2%")
+        st.metric("Specificity", "96.6%")
+        st.metric("Mod. AD Sens.", "73.9%")
 
     st.markdown("---")
     st.markdown("""
     **Authors:**
-    K. Prabhakar
-    Malla Siddharth Reddy
-    Kaleru Akhila
-    Prasad Chetti
+    K. Prabhakar, Malla Siddharth Reddy, Kaleru Akhila, Prasad Chetti
 
     **CBIT(A), Hyderabad**
     """)
@@ -685,7 +681,7 @@ all_subjects = sorted(
 # TABS
 # ─────────────────────────────────────────
 tab1, tab2, tab3, tab4 = st.tabs([
-    "🔬 Patient Diagnosis",
+    "🔬 Subject Prediction",
     "🗺️  XAI Explanation",
     "📊 Biomarker Analysis",
     "📈 Model Performance"
@@ -695,13 +691,13 @@ tab1, tab2, tab3, tab4 = st.tabs([
 # TAB 1 — PATIENT DIAGNOSIS
 # ═════════════════════════════════════════
 with tab1:
-    st.header("Live Patient Diagnosis")
+    st.header("Live Subject Prediction")
     st.markdown(
         "Select any subject from the "
         "65-subject cohort. The model uses "
         "**pre-computed LOSO-CV "
         "probabilities** — the exact "
-        "values reported in the paper "
+        "values reported in the README "
         "(AUC = 0.927).")
 
     col1, col2 = st.columns([1, 1])
@@ -754,7 +750,7 @@ with tab1:
             f"**True Label:** {label_str}")
 
         run_btn = st.button(
-            "🔍 Run Diagnosis",
+            "🔍 Show Prediction",
             type="primary",
             use_container_width=True)
 
@@ -826,7 +822,7 @@ with tab1:
         else:
             st.markdown(
                 "*Select a subject and "
-                "click Run Diagnosis*")
+                "click Show Prediction*")
 
     # MMSE scatter below
     if 'result' in st.session_state:
@@ -1029,8 +1025,9 @@ with tab4:
     st.header("Model Performance")
     st.markdown(
         "All 10 Phase 2 configurations "
-        "under leakage-proof LOSO-CV "
-        "(n=65 subjects).")
+        "under LOSO-CV "
+        "(n=65 subjects). "
+        "Severity rates use threshold 0.5.")
 
     fig_auc = plot_model_auc()
     st.pyplot(fig_auc)
@@ -1045,35 +1042,35 @@ with tab4:
         | Metric | Value |
         |--------|-------|
         | AUC | **0.927** |
-        | Accuracy | 90.8% |
-        | Sensitivity | 88.9% |
-        | Specificity | 93.1% |
-        | Parameters | 1,890 |
+        | Accuracy (τ=0.5) | 86.2% (56/65) |
+        | Sensitivity (τ=0.5) | 77.8% (28/36) |
+        | Specificity (τ=0.5) | 96.6% (28/29) |
+        | Parameters | 1,746 |
         | Channels | 10 |
-        | Threshold τ | 0.45 |
+        | Threshold τ | 0.5 |
         """)
 
     with col2:
-        st.subheader("Severity-Stratified")
+        st.subheader("Severity-Stratified (τ=0.5)")
         df = pd.DataFrame({
             'Model': [
-                'EEGNet+XAI (10ch) ★',
+                'EEGNet+XAI (10ch)',
                 'EEGNetSE (19ch)',
                 'EEGNet (19ch)',
                 'ShallowCN (19ch)',
                 'PSD+SVM (19ch)'
             ],
             'Severe Sens.': [
-                '0.923','0.846',
+                '0.846','0.846',
                 '0.846','0.769','0.769'
             ],
             'Mod. Sens.': [
-                '0.870','0.783',
-                '0.783','0.739','0.696'
+                '0.739','0.783',
+                '0.826','0.783','0.739'
             ],
             'CN Spec.': [
-                '0.931','0.966',
-                '1.000','0.966','0.966'
+                '0.966','0.862',
+                '0.897','0.897','0.897'
             ]
         })
         st.dataframe(
@@ -1127,10 +1124,10 @@ with tab4:
         "Catastrophic Overfitting")
     st.error("""
     DeepConvNet (154,802 parameters)
-    classified ALL 29 CN subjects as AD.
-    Specificity = 0.000.
+    classified ALL 29 CN subjects as AD
+    at the default threshold.
 
-    82× more parameters than
+    89× more parameters than
     EEGNet+XAI (10ch) → WORSE performance.
 
     Confirms: lightweight architectures
