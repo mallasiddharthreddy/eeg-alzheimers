@@ -11,8 +11,6 @@ Browse the 65-subject cohort and see each subject's leave-one-subject-out predic
 
 ## Overview
 
-> Code for EpochSpec (EEG detection of Alzheimer's disease and frontotemporal dementia, under review at IEEE ESCI 2027) will be released after the review.
-
 This repository contains the full Phase 2 research code and results for EEG-based Alzheimer's disease (AD) detection using a two-phase methodology:
 
 - **Phase 1** (n=42, severe AD only): EEGNet-SE with Squeeze-and-Excitation attention achieves **AUC = 0.950**
@@ -42,7 +40,7 @@ All models are evaluated with Leave-One-Subject-Out Cross-Validation (LOSO-CV), 
 
 ## XAI-Selected Top-10 Channels
 
-**T5, O1, P4, Pz, O2, Fz, C4, P3, C3, T3** — a posterior and parieto-temporal dominant montage consistent with known AD neurophysiology.
+T5, O1, P4, Pz, O2, Fz, C4, P3, C3, T3. Six of the 10 are posterior or parieto-temporal, which is consistent with the parieto-temporal changes reported in AD. The ranking was computed on all subjects (see notes).
 
 ---
 
@@ -51,6 +49,11 @@ All models are evaluated with Leave-One-Subject-Out Cross-Validation (LOSO-CV), 
 - Theta (4–8 Hz) has little effect for severe AD but becomes important once moderate AD subjects are included (band ablation ΔAcc = 0.323; see notes).
 - DeepConvNet (155k parameters) labels every subject as AD at the default threshold, while compact models with under 2k parameters work well on this small cohort.
 - A 10-electrode montage performed on par with the 19-channel models (AUC 0.927 vs 0.914–0.919). This points to a cheaper recording setup, but it needs confirmation with channel selection inside each fold.
+
+---
+
+## Follow-up work
+My follow-up project on the same dataset is **EpochSpec**, a lightweight epoch-level spectral classifier for detecting Alzheimer's disease and frontotemporal dementia from EEG. Every data-dependent step is fitted on the training subjects only, inside each fold of a fully nested leave-one-subject-out evaluation. It is under review at IEEE ESCI 2027, and the code will be released after the review.
 
 ---
 
